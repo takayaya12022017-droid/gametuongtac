@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#dff5ff">
+<title>Game tương tác</title>
+<style>
+:root{--blue:#1597e5;--cream:#fff9e9}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Arial,"Segoe UI",sans-serif;color:#24415c;background:linear-gradient(#dff5ff 0,#fffdf5 36%,#fff8e6 100%);min-height:100vh}
+.hero{width:100%;line-height:0;text-align:center;background:#dff5ff}
+.hero img{width:100%;height:auto;max-height:690px;object-fit:cover;object-position:center;display:block;margin:auto}
+.section{max-width:1240px;margin:0 auto;padding:14px 22px 24px}
+.section-heading{text-align:center;color:#1678bb;font-size:clamp(22px,3vw,30px);font-weight:900;margin:10px 0 22px;text-shadow:0 2px #fff}
+.games{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.game-card{min-width:0;border:2px solid #b8e5f8;border-radius:20px;padding:12px 12px 14px;text-align:center;background:linear-gradient(150deg,#effaff,#e7f7ff);box-shadow:0 3px 7px #24415c14;transition:transform .18s,box-shadow .18s}
+.game-card:hover{transform:translateY(-4px);box-shadow:0 9px 18px #24415c20}
+.game-card:nth-child(4n+2){background:linear-gradient(150deg,#fff5fa,#ffeaf3);border-color:#f4c4da}
+.game-card:nth-child(4n+3){background:linear-gradient(150deg,#f4fff1,#e9f9e5);border-color:#b9e4ad}
+.game-card:nth-child(4n+4){background:linear-gradient(150deg,#fffbed,#fff4d8);border-color:#f3d991}
+.thumb{width:100%;height:118px;display:block;object-fit:cover;border-radius:14px;margin-bottom:9px;background:#fff}
+.game-title{font-size:17px;line-height:1.25;font-weight:900;color:#164f83;margin:7px 0}
+.description{font-size:13px;line-height:1.35;color:#5d6570;min-height:35px;margin:7px 2px 11px}
+.play{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:145px;max-width:100%;padding:9px 18px;border-radius:25px;color:#fff;text-decoration:none;font-size:14px;font-weight:800;background:linear-gradient(90deg,#1597e5,#087dce);box-shadow:0 3px 7px #1597e533}
+.game-card:nth-child(4n+2) .play{background:linear-gradient(90deg,#f23b7a,#e71f63)}
+.game-card:nth-child(4n+3) .play{background:linear-gradient(90deg,#20b75a,#079b45)}
+.game-card:nth-child(4n+4) .play{background:linear-gradient(90deg,#ffad18,#f28a00)}
+.play:hover{filter:brightness(1.05)}
+.status{grid-column:1/-1;text-align:center;padding:45px 15px;color:#737b83;font-size:18px;line-height:1.6}
+footer{text-align:center;color:#168bd0;font-weight:900;font-size:18px;padding:8px 12px 30px}
+@media(max-width:850px){.games{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.section{padding:8px 14px 20px}.thumb{height:clamp(85px,19vw,140px)}}
+@media(max-width:420px){.game-card{padding:8px;border-radius:15px}.thumb{height:92px}.game-title{font-size:14px}.description{font-size:11px;min-height:43px}.play{min-width:0;padding:9px 13px;font-size:12px}}
+</style>
+</head>
+<body>
+<header class="hero"><img src="banner.jpg" alt="Game tương tác - kho trò chơi học tập dành cho trẻ em"></header>
+<main class="section">
+<h2 class="section-heading">🎈 Khám phá các trò chơi 🎈</h2>
+<div id="games" class="games"><div class="status">⏳ Đang tải các trò chơi...</div></div>
+</main>
+<footer>⭐ Chúc các bé học tập vui vẻ! ⭐</footer>
+<script>
+/*
+  Giao diện giữ nguyên bản mẫu ban đầu.
+  Mỗi game tự mang theo ảnh cover.jpg trong chính thư mục của game.
+
+  Cấu trúc:
+    game-ten/
+      index.html
+      cover.jpg
+*/
+function githubInfo(){
+  const host=location.hostname;
+  const parts=location.pathname.split('/').filter(Boolean);
+  const user=host.split('.')[0];
+  const isPages=host.endsWith('.github.io');
+  const repo=isPages ? (parts.length ? parts[0] : host) : (parts[0]||'');
+  const basePath=isPages && parts.length ? '/' + parts[0] + '/' : '/';
+  return {user,repo,basePath};
+}
+function niceName(s){
+  return s.replace(/[-_]+/g,' ').replace(/\b\w/g,c=>c.toUpperCase());
+}
+function safeText(s){
+  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fallbackCover(title){
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="675">
+  <defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#dff5ff"/><stop offset="1" stop-color="#fff0c9"/></linearGradient></defs>
+  <rect width="100%" height="100%" rx="30" fill="url(#g)"/>
+  <text x="50%" y="45%" text-anchor="middle" font-size="105">🎮</text>
+  <text x="50%" y="65%" text-anchor="middle" font-family="Arial" font-size="32" font-weight="bold" fill="#1678bb">${safeText(title)}</text>
+  </svg>`;
+  return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
+}
+async function loadGames(){
+  const target=document.getElementById('games');
+  const {user,repo,basePath}=githubInfo();
+  try{
+    if(!user||!repo) throw new Error('Không xác định được repository từ địa chỉ trang.');
+    const url=`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents`;
+    const res=await fetch(url,{cache:'no-store'});
+    if(!res.ok) throw new Error(`GitHub API trả về ${res.status}. Kiểm tra tên repository hoặc giới hạn API.`);
+    const items=await res.json();
+    const folders=items.filter(x=>x.type==='dir' && !['assets','.github','node_modules'].includes(x.name));
+    target.innerHTML='';
+    if(!folders.length){
+      target.innerHTML='<div class="status">📺 Chưa tìm thấy thư mục game nào.<br>Hãy upload mỗi game vào một thư mục riêng, bên trong có index.html và cover.jpg.</div>';
+      return;
+    }
+
+    const games=[];
+    for(const folder of folders){
+      try{
+        const folderUrl=`https://api.github.com/repos/${encodeURIComponent(user)}/${encodeURIComponent(repo)}/contents/${encodeURIComponent(folder.name)}`;
+        const folderRes=await fetch(folderUrl,{cache:'no-store'});
+        if(!folderRes.ok) continue;
+        const files=await folderRes.json();
+        const indexFile=files.find(x=>x.type==='file' && x.name.toLowerCase()==='index.html');
+        if(!indexFile) continue;
+        const coverFile=files.find(x=>x.type==='file' && x.name.toLowerCase()==='cover.jpg');
+        const title=niceName(folder.name);
+        const cover=coverFile
+          ? `${coverFile.download_url}?v=${encodeURIComponent(coverFile.sha)}`
+          : fallbackCover(title);
+        games.push({name:title,cover,url:`${basePath}${encodeURIComponent(folder.name)}/`});
+      }catch(e){ console.warn('Bỏ qua folder:',folder.name,e); }
+    }
+
+    games.sort((a,b)=>a.name.localeCompare(b.name,'vi'));
+    if(!games.length){
+      target.innerHTML='<div class="status">⚠️ Không tìm thấy game hợp lệ.<br>Mỗi thư mục game cần có file index.html.</div>';
+      return;
+    }
+
+    for(const game of games){
+      const card=document.createElement('article');
+      card.className='game-card';
+      card.innerHTML=`<img class="thumb" src="${game.cover}" alt="${safeText(game.name)}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackCover(game.name)}'">
+        <div class="game-title">${safeText(game.name)}</div>
+        <div class="description">🎈 Trò chơi học tập tương tác giúp bé vừa học vừa vui.</div>
+        <a class="play" href="${game.url}">▶ Chơi ngay</a>`;
+      target.appendChild(card);
+    }
+  }catch(err){
+    console.error(err);
+    target.innerHTML=`<div class="status">⚠️ Không tải được danh sách game.<br>${safeText(err.message)}<br><small>Kiểm tra repository đang Public và có bật GitHub Pages.</small></div>`;
+  }
+}
+loadGames();
+</script>
+</body>
+</html>
