@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bé vui học đếm – Khám phá số lượng 3</title>
+<style>
+:root{--ink:#34415f;--pink:#ff8fb1;--yellow:#ffd86b;--blue:#8edcff;--green:#8ee2b2;--purple:#c7b4ff;--cream:#fffaf0}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:"Trebuchet MS",Arial,sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 15%,#fff 0 5%,transparent 6%),linear-gradient(135deg,#c9f1ff,#fff0f5 55%,#fff4c9);overflow-x:hidden}
+body:before,body:after{content:"";position:fixed;border-radius:50%;z-index:-1;filter:blur(2px);opacity:.55}
+body:before{width:240px;height:240px;background:#fff2a8;top:-80px;right:-40px}
+body:after{width:220px;height:220px;background:#c9ffdc;bottom:-80px;left:-50px}
+.app{width:min(1100px,96vw);margin:0 auto;padding:18px 12px 28px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.brand{font-weight:900;font-size:clamp(18px,3vw,27px);color:#5c56b5;text-shadow:0 2px #fff}
+.pill{background:#fff;border:3px solid #fff;border-radius:999px;padding:9px 15px;font-weight:800;box-shadow:0 5px 0 #dce5f7}
+.panel{background:rgba(255,255,255,.88);border:4px solid white;border-radius:30px;box-shadow:0 12px 0 rgba(109,130,181,.15),0 18px 40px rgba(83,103,150,.12);padding:clamp(18px,3vw,32px);position:relative;overflow:hidden}
+.hero{text-align:center;padding:clamp(25px,5vw,55px) 20px}
+.mascots{font-size:clamp(42px,7vw,76px);filter:drop-shadow(0 5px 0 rgba(60,80,130,.12));margin-bottom:8px}
+h1{font-size:clamp(29px,5vw,52px);line-height:1.12;color:#6557c8;margin:8px 0 12px;text-shadow:0 3px #fff}
+.subtitle{font-size:clamp(16px,2.5vw,22px);line-height:1.5;margin:0 auto 24px;max-width:720px}
+.btn{border:0;border-radius:20px;padding:15px 24px;font-size:clamp(17px,2.4vw,22px);font-weight:900;cursor:pointer;color:#3d4165;background:linear-gradient(180deg,#fff3a8,#ffd45e);box-shadow:0 7px 0 #e7b53f,0 10px 18px #c4b58c55;transition:transform .12s,box-shadow .12s;min-height:58px}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(4px);box-shadow:0 3px 0 #e7b53f}
+.btn.blue{background:linear-gradient(180deg,#c4f0ff,#83d9ff);box-shadow:0 7px 0 #56b8e8}
+.btn.pink{background:linear-gradient(180deg,#ffd4e2,#ff9dbb);box-shadow:0 7px 0 #e77d9d}
+.btn.green{background:linear-gradient(180deg,#caffdf,#87e5b0);box-shadow:0 7px 0 #5ec58d}
+.progress-wrap{display:flex;align-items:center;gap:12px;margin:0 0 18px}
+.progress{height:15px;background:#e8eafd;border-radius:99px;overflow:hidden;flex:1;border:2px solid white}
+.progress>div{height:100%;width:0;background:linear-gradient(90deg,#8be7ba,#6dcaff,#c4a6ff);border-radius:99px;transition:width .35s}
+.question-head{text-align:center}
+.eyebrow{font-weight:900;color:#8b80c8;letter-spacing:.06em;text-transform:uppercase;font-size:14px}
+h2{font-size:clamp(25px,4vw,38px);margin:8px 0 10px;color:#4b5da5}
+.instruction{font-size:clamp(17px,2.4vw,23px);margin:0 0 22px;line-height:1.45}
+.stage-content{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,24px);flex-wrap:wrap;min-height:170px;margin:12px 0 22px}
+.object-card{background:linear-gradient(160deg,#fff,#fff8e8);border:3px solid #fff;border-radius:26px;padding:18px;min-width:min(100%,260px);box-shadow:0 7px 0 #e8e7f4,0 12px 20px #a6b2d522;text-align:center}
+.objects{font-size:clamp(38px,7vw,66px);line-height:1.45;letter-spacing:5px;overflow-wrap:anywhere;max-width:520px;margin:auto;filter:drop-shadow(0 3px 1px #e1d9c8)}
+.number-big{font-size:clamp(65px,11vw,105px);font-weight:1000;color:#ff8eae;text-shadow:0 5px 0 #ffdbe6,0 8px 0 #f7bfd0}
+.answers{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:14px;max-width:760px;margin:0 auto}
+.answer{min-height:105px;border:4px solid #fff;border-radius:24px;background:linear-gradient(160deg,#fff,#f1f2ff);box-shadow:0 7px 0 #d8d9ef;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:clamp(30px,4vw,44px);font-weight:1000;color:#5c5db0;cursor:pointer;transition:transform .15s,border-color .15s; padding:12px}
+.answer span{font-size:14px;font-weight:800;color:#8589ad}
+.answer:hover{transform:translateY(-4px) rotate(-1deg);border-color:#ffe17e}
+.answer:disabled{cursor:default;opacity:.95}
+.feedback{min-height:58px;margin:20px auto 0;text-align:center;font-size:clamp(19px,3vw,26px);font-weight:1000}
+.feedback.good{color:#1ca96a}.feedback.try{color:#d17b45}
+.actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:8px}
+.hidden{display:none!important}
+.finish{text-align:center;padding:30px 12px}
+.stars{font-size:clamp(35px,6vw,65px);letter-spacing:5px;margin:16px 0;animation:bob 1.6s infinite ease-in-out}
+.finish h2{font-size:clamp(30px,5vw,45px);color:#e66e9a}
+.finish p{font-size:clamp(18px,2.7vw,24px);line-height:1.5}
+.footer{text-align:center;font-size:13px;color:#747c9e;margin-top:18px}
+.confetti{position:fixed;top:-20px;z-index:10;font-size:25px;pointer-events:none;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(600deg);opacity:.1}}
+@keyframes bob{50%{transform:translateY(-8px) rotate(2deg)}}
+@media(max-width:520px){.panel{border-radius:23px}.answer{min-height:88px}.object-card{min-width:100%}.stage-content{min-height:120px}}
+@media print{body{background:white}.topbar,.footer{display:none}.panel{box-shadow:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">🌈 LỚP HỌC VUI NHỘN</div>
+    <div class="pill" id="scorePill">⭐ Sao của bé: 0</div>
+  </div>
+
+  <section class="panel hero" id="welcome">
+    <div class="mascots">🐻 🍓 🐥 🌼</div>
+    <h1>BÉ VUI HỌC ĐẾM</h1>
+    <p class="subtitle"><strong>Khám phá số lượng 3</strong><br> Cùng các bạn thú đáng yêu đếm đồ vật, tìm nhóm đúng và nhận thật nhiều sao nhé!</p>
+    <button class="btn" onclick="startGame()">🚀 BẮT ĐẦU CHƠI</button>
+    <p style="margin:22px 0 0;font-weight:800;color:#8c86b9">👆 Bé chọn đáp án thật to · Chơi cùng cô và các bạn</p>
+  </section>
+
+  <section class="panel hidden" id="game">
+    <div class="progress-wrap">
+      <div class="pill" id="roundPill">Màn 1/5</div>
+      <div class="progress"><div id="progressFill"></div></div>
+    </div>
+    <div class="question-head">
+      <div class="eyebrow" id="eyebrow">MÀN 1 · BÉ ĐẾM NÀO</div>
+      <h2 id="questionTitle">Có bao nhiêu?</h2>
+      <p class="instruction" id="instruction">Bé hãy đếm và chọn số đúng nhé!</p>
+    </div>
+    <div class="stage-content" id="stageContent"></div>
+    <div class="answers" id="answers"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+    <div class="actions">
+      <button class="btn blue hidden" id="nextBtn" onclick="nextRound()">TIẾP THEO ➜</button>
+    </div>
+  </section>
+
+  <section class="panel finish hidden" id="finish">
+    <div class="mascots">🏆 🐰 🎉</div>
+    <h2>HOAN HÔ, BÉ GIỎI QUÁ!</h2>
+    <p>Bé đã hoàn thành 5 màn chơi khám phá số lượng 3.<br>Cùng ngắm những ngôi sao bé nhận được nhé!</p>
+    <div class="stars" id="finalStars">⭐ ⭐ ⭐ ⭐ ⭐</div>
+    <p id="finalMessage">Bé thật chăm chỉ và thông minh!</p>
+    <button class="btn green" onclick="startGame()">🔄 CHƠI LẠI</button>
+  </section>
+  <div class="footer">🌟 Trò chơi học tập dành cho bé 3–4 tuổi · Khám phá số lượng 3 🌟</div>
+</div>
+<script>
+const rounds = [
+ {name:"BÉ ĐẾM NÀO",title:"Có bao nhiêu quả dâu?",instruction:"Bé hãy đếm số quả dâu và chọn số 3 nhé!",type:"count",emoji:"🍓",count:3,options:[1,2,3],answer:3},
+ {name:"CHỌN NHÓM ĐÚNG",title:"Tìm nhóm có 3 bạn",instruction:"Bé hãy chọn nhóm có đúng 3 chú gà con nhé!",type:"group",target:3,emoji:"🐥",options:[1,3,4],answer:1},
+ {name:"TÌM SỐ LƯỢNG 3",title:"Tìm đúng 3 bông hoa",instruction:"Bé hãy tìm nhóm có đúng 3 bông hoa nhé!",type:"find3",emoji:"🌼",options:[1,3,4],answer:1},
+ {name:"NHẬN BIẾT NHÓM 3",title:"Nhóm nào có 3 chú thỏ?",instruction:"Bé hãy quan sát và chọn nhóm có đúng 3 chú thỏ nhé!",type:"find3",emoji:"🐰",options:[1,3,4],answer:1},
+ {name:"BÉ THỬ TÀI ĐẾM",title:"Có 3 chiếc xe không?",instruction:"Bé hãy đếm những chiếc xe đồ chơi và chọn số 3 nhé!",type:"count",emoji:"🚗",count:3,options:[2,3,4],answer:2}
+];
+let current=0, stars=0, locked=false, attempts=0;
+const $=id=>document.getElementById(id);
+function startGame(){current=0;stars=0;attempts=0;locked=false;$("welcome").classList.add("hidden");$("finish").classList.add("hidden");$("game").classList.remove("hidden");updateScore();renderRound();}
+function updateScore(){$("scorePill").textContent="⭐ Sao của bé: "+stars;}
+function renderRound(){
+ locked=false;const r=rounds[current];
+ $("roundPill").textContent=`Màn ${current+1}/5`;
+ $("progressFill").style.width=(current/5*100)+"%";
+ $("eyebrow").textContent=`MÀN ${current+1} · ${r.name}`;
+ $("questionTitle").textContent=r.title;$("instruction").textContent=r.instruction;
+ $("feedback").textContent="";$("feedback").className="feedback";$("nextBtn").classList.add("hidden");
+ const stage=$("stageContent"), answers=$("answers");stage.innerHTML="";answers.innerHTML="";
+ if(r.type==="count"){
+   stage.innerHTML=`<div class="object-card"><div class="objects">${Array(r.count).fill(r.emoji).join(" ")}</div></div>`;
+   r.options.forEach((n,i)=>answers.appendChild(numberButton(n,n===r.count)));
+ } else if(r.type==="group"){
+   [1,3,4].forEach((n,i)=>{const b=document.createElement("button");b.className="answer";b.innerHTML=`<div class="objects">${Array(n).fill(r.emoji).join(" ")}</div><span>Nhóm ${i+1}</span>`;b.onclick=()=>check(b,n===r.target);answers.appendChild(b);});
+ } else if(r.type==="find3"){
+   [1,3,4].forEach((n,i)=>{const b=document.createElement("button");b.className="answer";b.innerHTML=`<div class="objects">${Array(n).fill(r.emoji).join(" ")}</div><span>Nhóm ${i+1}</span>`;b.onclick=()=>check(b,n===3);answers.appendChild(b);});
+ } else if(r.type==="more"){
+   [r.left,r.right].forEach((n,i)=>{const b=document.createElement("button");b.className="answer";b.innerHTML=`<div class="objects">${Array(n).fill(r.emoji).join(" ")}</div><span>Nhóm ${i===0?"A":"B"}</span>`;b.onclick=()=>check(b,n===Math.max(r.left,r.right));answers.appendChild(b);});
+ }
+}
+function numberButton(n,correct){const b=document.createElement("button");b.className="answer";b.innerHTML=`${n}<span>CHỌN SỐ ${n}</span>`;b.onclick=()=>check(b,correct);return b;}
+function check(button,correct){
+ if(locked)return;attempts++;
+ if(correct){locked=true;stars++;updateScore();$("feedback").textContent="🌟 Giỏi lắm! Bé làm đúng rồi! 🎉";$("feedback").className="feedback good";button.style.borderColor="#71dda5";button.style.background="linear-gradient(160deg,#e5ffef,#b4f2ce)";$("nextBtn").classList.remove("hidden");$("nextBtn").textContent=current===4?"XEM KẾT QUẢ 🏆":"TIẾP THEO ➜";celebrate();playCheer(true);document.querySelectorAll(".answer").forEach(b=>b.disabled=true);}
+ else {$("feedback").textContent="😊 Bé thử lại nhé! Mình cùng đếm nào!";$("feedback").className="feedback try";button.animate([{transform:"translateX(0)"},{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"translateX(0)"}],{duration:260});playCheer(false);}
+}
+function nextRound(){if(current<4){current++;renderRound();}else{ $("game").classList.add("hidden");$("finish").classList.remove("hidden");$("progressFill").style.width="100%";$("finalStars").textContent=stars>=5?"⭐ ⭐ ⭐ ⭐ ⭐":Array(Math.min(5,stars)).fill("⭐").join(" ")+" "+Array(5-Math.min(5,stars)).fill("☆").join(" ");$("finalMessage").textContent=stars===5?"Tuyệt vời! Bé hoàn thành xuất sắc cả 5 màn chơi!":"Bé đã rất cố gắng! Chơi lại để nhận thêm sao nhé!";celebrate();}}
+function playCheer(correct){
+  try{
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if(!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const now = ctx.currentTime;
+    if(correct){
+      // Clear applause: a series of distinct hand-clap transients with a bright, crisp attack.
+      const clapCount = 18;
+      for(let i=0;i<clapCount;i++){
+        const offset = i * 0.065 + Math.random() * 0.025;
+        const duration = 0.075 + Math.random() * 0.035;
+        const length = Math.floor(ctx.sampleRate * duration);
+        const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for(let j=0;j<length;j++){
+          const envelope = Math.pow(1 - j / length, 2.8);
+          data[j] = (Math.random() * 2 - 1) * envelope;
+        }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = "bandpass";
+        filter.frequency.value = 1500 + Math.random() * 1100;
+        filter.Q.value = 0.7;
+        const gain = ctx.createGain();
+        const volume = 0.28 + Math.random() * 0.12;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.linearRampToValueAtTime(volume, now + offset + 0.004);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + duration);
+        source.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+        source.start(now + offset); source.stop(now + offset + duration);
+      }
+    } else {
+      // A gentle sad horn: descending, muted brass-like notes.
+      [330, 247].forEach((freq, i) => {
+        const offset = i * 0.23;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        osc.type = "sawtooth";
+        osc.frequency.setValueAtTime(freq, now + offset);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.82, now + offset + 0.25);
+        filter.type = "lowpass";
+        filter.frequency.value = 700;
+        gain.gain.setValueAtTime(0.0001, now + offset);
+        gain.gain.linearRampToValueAtTime(0.13, now + offset + 0.04);
+        gain.gain.setValueAtTime(0.11, now + offset + 0.16);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + 0.29);
+        osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+        osc.start(now + offset); osc.stop(now + offset + 0.3);
+      });
+    }
+    setTimeout(()=>ctx.close(), 1500);
+  }catch(e){}
+}
+function celebrate(){const symbols=["⭐","🎉","🌈","💖","✨","🎊"];for(let i=0;i<24;i++){const e=document.createElement("span");e.className="confetti";e.textContent=symbols[Math.floor(Math.random()*symbols.length)];e.style.left=Math.random()*100+"vw";e.style.animationDelay=Math.random()*.5+"s";document.body.appendChild(e);setTimeout(()=>e.remove(),2400);}}
+</script>
+</body>
+</html>
