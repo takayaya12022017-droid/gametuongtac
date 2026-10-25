@@ -1,203 +1,640 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>🎮 Game tương tác</title>
+<title>Game tương tác</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #eef7ff, #fff7e8);
-            color: #333;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        header {
-            text-align: center;
-            padding: 35px 20px 25px;
-        }
+body {
+    margin: 0;
+    font-family: Arial, "Segoe UI", sans-serif;
+    background:
+        linear-gradient(
+            180deg,
+            #dff5ff 0%,
+            #ffffff 45%,
+            #fff8df 100%
+        );
+    color: #333;
+}
 
-        header h1 {
-            margin: 0;
-            font-size: 36px;
-            color: #2563eb;
-        }
+/* =========================
+   HEADER
+========================= */
 
-        header p {
-            margin-top: 10px;
-            font-size: 18px;
-            color: #666;
-        }
+header {
+    text-align: center;
+    padding: 25px 20px 10px;
+}
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            padding: 20px;
-        }
+.banner {
+    max-width: 850px;
+    width: 95%;
+    margin: 0 auto 5px;
+    position: relative;
+}
 
-        .games {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-            gap: 20px;
-        }
+/* Trang trí cầu vồng */
+.rainbow {
+    position: relative;
+    width: 360px;
+    max-width: 80%;
+    height: 150px;
+    margin: auto;
+}
 
-        .game {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+.rainbow span {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 250px 250px 0 0;
+    border-style: solid;
+    border-bottom: 0;
+}
 
-        .game:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-        }
+.r1 {
+    width: 350px;
+    height: 150px;
+    border-width: 16px;
+    border-color: #ffb347;
+}
 
-        .icon {
-            font-size: 55px;
-            margin-bottom: 10px;
-        }
+.r2 {
+    width: 310px;
+    height: 132px;
+    border-width: 16px;
+    border-color: #ffe36e;
+    top: 18px;
+}
 
-        .game h2 {
-            font-size: 21px;
-            margin: 10px 0;
-        }
+.r3 {
+    width: 270px;
+    height: 114px;
+    border-width: 16px;
+    border-color: #9ee493;
+    top: 36px;
+}
 
-        .game p {
-            color: #777;
-            min-height: 40px;
-        }
+.r4 {
+    width: 230px;
+    height: 96px;
+    border-width: 16px;
+    border-color: #74c0fc;
+    top: 54px;
+}
 
-        .play {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 12px 25px;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: bold;
-        }
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    width: 110px;
+    height: 45px;
+    bottom: -5px;
+}
 
-        .play:hover {
-            background: #1d4ed8;
-        }
+.cloud::before,
+.cloud::after {
+    content: "";
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+}
 
-        .loading {
-            text-align: center;
-            padding: 40px;
-            font-size: 18px;
-            color: #777;
-        }
+.cloud::before {
+    width: 50px;
+    height: 50px;
+    left: 20px;
+    top: -22px;
+}
 
-        footer {
-            text-align: center;
-            padding: 40px 20px;
-            color: #888;
-        }
+.cloud::after {
+    width: 65px;
+    height: 65px;
+    right: 12px;
+    top: -30px;
+}
 
-        @media (max-width: 600px) {
-            header h1 {
-                font-size: 28px;
-            }
+.cloud.left {
+    left: 0;
+}
 
-            header p {
-                font-size: 16px;
-            }
+.cloud.right {
+    right: 0;
+}
 
-            .container {
-                padding: 15px;
-            }
-        }
-    </style>
+/* Cây + nhân vật trang trí */
+
+.children {
+    font-size: 62px;
+    margin-top: -100px;
+    position: relative;
+    z-index: 3;
+    letter-spacing: 8px;
+}
+
+.title {
+    font-size: clamp(38px, 7vw, 72px);
+    font-weight: 900;
+    color: #1597e5;
+    text-shadow:
+        3px 3px 0 white,
+        6px 6px 0 rgba(0,0,0,0.08);
+    margin: 0;
+}
+
+.subtitle {
+    font-size: clamp(16px, 2.5vw, 23px);
+    font-weight: 600;
+    color: #666;
+    margin: 8px 0 25px;
+}
+
+/* =========================
+   GAME LIST
+========================= */
+
+.container {
+    max-width: 1150px;
+    margin: auto;
+    padding: 10px 20px 40px;
+}
+
+.games {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(230px, 1fr)
+    );
+    gap: 22px;
+}
+
+/* =========================
+   GAME CARD
+========================= */
+
+.game {
+    background: white;
+    border-radius: 24px;
+    padding: 16px;
+    text-align: center;
+
+    border: 3px solid #bde8ff;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,0.08);
+
+    transition:
+        transform 0.25s,
+        box-shadow 0.25s;
+}
+
+.game:hover {
+    transform: translateY(-7px);
+    box-shadow:
+        0 15px 30px rgba(0,0,0,0.13);
+}
+
+.game-image {
+    height: 135px;
+    border-radius: 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 72px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #dff5ff,
+            #eefcff
+        );
+
+    margin-bottom: 12px;
+}
+
+.game h2 {
+    font-size: 21px;
+    color: #1769aa;
+    margin: 8px 0;
+}
+
+.game p {
+    color: #777;
+    font-size: 14px;
+    min-height: 40px;
+    margin: 8px 5px;
+}
+
+.play {
+    display: inline-block;
+
+    padding: 12px 28px;
+
+    border-radius: 30px;
+
+    color: white;
+    text-decoration: none;
+
+    font-weight: bold;
+    font-size: 16px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #1597e5,
+            #0b82d0
+        );
+
+    box-shadow:
+        0 4px 10px rgba(21,151,229,0.3);
+
+    transition: transform 0.2s;
+}
+
+.play:hover {
+    transform: scale(1.05);
+}
+
+/* Màu luân phiên */
+
+.game:nth-child(2n) {
+    border-color: #ffc8df;
+}
+
+.game:nth-child(2n) .game-image {
+    background: #fff0f7;
+}
+
+.game:nth-child(2n) .play {
+    background:
+        linear-gradient(
+            90deg,
+            #f83b79,
+            #ec2464
+        );
+}
+
+.game:nth-child(3n) {
+    border-color: #b9edc0;
+}
+
+.game:nth-child(3n) .game-image {
+    background: #effff1;
+}
+
+.game:nth-child(3n) .play {
+    background:
+        linear-gradient(
+            90deg,
+            #25b85a,
+            #16a34a
+        );
+}
+
+.game:nth-child(4n) {
+    border-color: #ffe19a;
+}
+
+.game:nth-child(4n) .game-image {
+    background: #fff9e7;
+}
+
+.game:nth-child(4n) .play {
+    background:
+        linear-gradient(
+            90deg,
+            #ffad19,
+            #f28b00
+        );
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    padding: 50px;
+
+    font-size: 20px;
+
+    color: #777;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer {
+    text-align: center;
+
+    padding: 25px 20px 45px;
+
+    font-size: 20px;
+    font-weight: bold;
+
+    color: #1597e5;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    header {
+        padding-top: 15px;
+    }
+
+    .rainbow {
+        height: 110px;
+    }
+
+    .children {
+        font-size: 45px;
+        margin-top: -75px;
+    }
+
+    .container {
+        padding: 10px 14px 30px;
+    }
+
+    .games {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 12px;
+    }
+
+    .game {
+        padding: 10px;
+        border-radius: 18px;
+    }
+
+    .game-image {
+        height: 95px;
+        font-size: 48px;
+        border-radius: 14px;
+    }
+
+    .game h2 {
+        font-size: 16px;
+    }
+
+    .game p {
+        font-size: 12px;
+        min-height: 35px;
+    }
+
+    .play {
+        padding: 9px 15px;
+        font-size: 13px;
+    }
+
+}
+
+/* Điện thoại rất nhỏ */
+
+@media (max-width: 380px) {
+
+    .games {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
 </head>
+
 
 <body>
 
+
+<!-- =========================
+     HEADER
+========================= -->
+
 <header>
-    <h1>🎮 Game tương tác</h1>
-    <p>Kho trò chơi học tập và tương tác dành cho trẻ em</p>
+
+    <div class="banner">
+
+        <div class="rainbow">
+
+            <span class="r1"></span>
+            <span class="r2"></span>
+            <span class="r3"></span>
+            <span class="r4"></span>
+
+            <div class="cloud left"></div>
+            <div class="cloud right"></div>
+
+        </div>
+
+        <div class="children">
+            🌳 🧒🏻 👦🏻 👧🏻 🐦
+        </div>
+
+    </div>
+
+
+    <h1 class="title">
+        Game tương tác
+    </h1>
+
+    <div class="subtitle">
+        Kho trò chơi học tập và tương tác dành cho trẻ em
+    </div>
+
 </header>
+
+
+<!-- =========================
+     GAME CONTAINER
+========================= -->
 
 <div class="container">
 
-    <div id="games" class="games">
+    <div
+        id="games"
+        class="games"
+    >
+
         <div class="loading">
-            ⏳ Đang tải danh sách game...
+            ⏳ Đang tải các trò chơi...
         </div>
+
     </div>
 
 </div>
 
+
 <footer>
-    🌟 Chúc các bé học tập vui vẻ! 🌟
+    ⭐ Chúc các bé học tập vui vẻ! ⭐
 </footer>
+
+
 
 <script>
 
-    // Tên tài khoản GitHub của bạn
-    const GITHUB_USER = "TEN-GITHUB-CUA-BAN";
+/*
+==========================================================
+   CẤU HÌNH GITHUB
+==========================================================
 
-    // Tên repository
-    const REPOSITORY = "Game-tuong-tac";
+   CHỈ CẦN SỬA DÒNG GITHUB_USER.
 
-    const gamesContainer = document.getElementById("games");
+==========================================================
+*/
 
-    async function loadGames() {
 
-        try {
+const GITHUB_USER = "TEN-GITHUB-CUA-BAN";
 
-            const url =
-                `https://api.github.com/repos/${GITHUB_USER}/${REPOSITORY}/contents`;
+const REPOSITORY = "Game-tuong-tac";
 
-            const response = await fetch(url);
 
-            if (!response.ok) {
-                throw new Error("Không thể kết nối GitHub");
-            }
+/*
+==========================================================
+   LẤY DANH SÁCH GAME
+==========================================================
+*/
 
-            const files = await response.json();
+async function loadGames() {
 
-            // Chỉ lấy các thư mục
-            const folders = files.filter(
+    const gamesContainer =
+        document.getElementById("games");
+
+    try {
+
+        const apiURL =
+            `https://api.github.com/repos/${GITHUB_USER}/${REPOSITORY}/contents`;
+
+        const response =
+            await fetch(apiURL);
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Không thể kết nối GitHub"
+            );
+
+        }
+
+
+        const items =
+            await response.json();
+
+
+        /*
+        Chỉ lấy các thư mục.
+
+        Ví dụ:
+
+        game-toan
+        game-mau-sac
+        game-con-vat
+
+        sẽ được lấy.
+
+        File index.html chính sẽ bị bỏ qua.
+        */
+
+        const gameFolders =
+            items.filter(
                 item => item.type === "dir"
             );
 
-            gamesContainer.innerHTML = "";
 
-            if (folders.length === 0) {
+        gamesContainer.innerHTML = "";
 
-                gamesContainer.innerHTML = `
-                    <div class="loading">
-                        🎮 Chưa có game nào.
-                    </div>
-                `;
 
-                return;
-            }
+        if (gameFolders.length === 0) {
 
-            folders.forEach(folder => {
+            gamesContainer.innerHTML = `
 
-                const gameName = formatGameName(folder.name);
+                <div class="loading">
 
-                const game = document.createElement("div");
+                    📺 Chưa có trò chơi nào.
 
-                game.className = "game";
+                    <br><br>
+
+                    Hãy upload game đầu tiên!
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        /*
+        Sắp xếp game theo tên
+        */
+
+        gameFolders.sort(
+            (a, b) =>
+                a.name.localeCompare(
+                    b.name,
+                    "vi"
+                )
+        );
+
+
+        /*
+        Tạo từng thẻ game
+        */
+
+        gameFolders.forEach(
+            (folder, index) => {
+
+                const gameName =
+                    formatGameName(
+                        folder.name
+                    );
+
+
+                const icon =
+                    getGameIcon(
+                        folder.name
+                    );
+
+
+                const game =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                game.className =
+                    "game";
+
 
                 game.innerHTML = `
-                    <div class="icon">🎮</div>
 
-                    <h2>${gameName}</h2>
+                    <div class="game-image">
+                        ${icon}
+                    </div>
 
-                    <p>Trò chơi tương tác dành cho trẻ em</p>
+                    <h2>
+                        ${gameName}
+                    </h2>
+
+                    <p>
+                        Trò chơi tương tác
+                        dành cho trẻ em
+                    </p>
 
                     <a
                         class="play"
@@ -205,38 +642,161 @@
                     >
                         ▶ Chơi ngay
                     </a>
+
                 `;
 
-                gamesContainer.appendChild(game);
 
-            });
+                gamesContainer.appendChild(
+                    game
+                );
 
-        } catch (error) {
-
-            gamesContainer.innerHTML = `
-                <div class="loading">
-                    ⚠️ Không thể tải danh sách game.
-                    <br><br>
-                    Vui lòng thử lại sau.
-                </div>
-            `;
-
-            console.error(error);
-        }
-    }
-
-
-    // Chuyển tên thư mục thành tên đẹp
-    function formatGameName(name) {
-
-        return name
-            .replace(/[-_]/g, " ")
-            .replace(/\b\w/g, letter => letter.toUpperCase());
+            }
+        );
 
     }
 
 
-    loadGames();
+    catch (error) {
+
+        console.error(error);
+
+
+        gamesContainer.innerHTML = `
+
+            <div class="loading">
+
+                ⚠️ Không thể tải danh sách game.
+
+                <br><br>
+
+                Vui lòng thử lại sau.
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+
+/*
+==========================================================
+   ĐỔI TÊN THƯ MỤC THÀNH TÊN ĐẸP
+==========================================================
+*/
+
+function formatGameName(name) {
+
+    return name
+
+        .replace(/[-_]/g, " ")
+
+        .replace(/\b\w/g,
+            letter =>
+                letter.toUpperCase()
+        );
+
+}
+
+
+/*
+==========================================================
+   TỰ CHỌN BIỂU TƯỢNG CHO GAME
+==========================================================
+*/
+
+function getGameIcon(name) {
+
+    const text =
+        name.toLowerCase();
+
+
+    if (
+        text.includes("toan") ||
+        text.includes("toán") ||
+        text.includes("phep") ||
+        text.includes("so")
+    ) {
+        return "🔢";
+    }
+
+
+    if (
+        text.includes("mau") ||
+        text.includes("màu")
+    ) {
+        return "🎨";
+    }
+
+
+    if (
+        text.includes("con-vat") ||
+        text.includes("dong-vat") ||
+        text.includes("động-vật") ||
+        text.includes("animal")
+    ) {
+        return "🐶";
+    }
+
+
+    if (
+        text.includes("chu") ||
+        text.includes("chữ") ||
+        text.includes("alphabet")
+    ) {
+        return "🔤";
+    }
+
+
+    if (
+        text.includes("hinh") ||
+        text.includes("hình") ||
+        text.includes("shape")
+    ) {
+        return "🔷";
+    }
+
+
+    if (
+        text.includes("am-thanh") ||
+        text.includes("amthanh") ||
+        text.includes("sound")
+    ) {
+        return "🎵";
+    }
+
+
+    if (
+        text.includes("nho") ||
+        text.includes("nhớ") ||
+        text.includes("memory")
+    ) {
+        return "🧠";
+    }
+
+
+    if (
+        text.includes("dem") ||
+        text.includes("đếm") ||
+        text.includes("count")
+    ) {
+        return "🔢";
+    }
+
+
+    return "🎮";
+
+}
+
+
+/*
+==========================================================
+   CHẠY
+==========================================================
+*/
+
+loadGames();
 
 </script>
 
