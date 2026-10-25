@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>🎮 Game tương tác</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eef7ff, #fff7e8);
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            padding: 35px 20px 25px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+            color: #2563eb;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .games {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+        }
+
+        .game {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .game:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+        }
+
+        .icon {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        .game h2 {
+            font-size: 21px;
+            margin: 10px 0;
+        }
+
+        .game p {
+            color: #777;
+            min-height: 40px;
+        }
+
+        .play {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 12px 25px;
+            background: #2563eb;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .play:hover {
+            background: #1d4ed8;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 28px;
+            }
+
+            header p {
+                font-size: 16px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎮 Game tương tác</h1>
+    <p>Kho trò chơi học tập và tương tác dành cho trẻ em</p>
+</header>
+
+<div class="container">
+
+    <div id="games" class="games">
+        <div class="loading">
+            ⏳ Đang tải danh sách game...
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    🌟 Chúc các bé học tập vui vẻ! 🌟
+</footer>
+
+<script>
+
+    // Tên tài khoản GitHub của bạn
+    const GITHUB_USER = "TEN-GITHUB-CUA-BAN";
+
+    // Tên repository
+    const REPOSITORY = "Game-tuong-tac";
+
+    const gamesContainer = document.getElementById("games");
+
+    async function loadGames() {
+
+        try {
+
+            const url =
+                `https://api.github.com/repos/${GITHUB_USER}/${REPOSITORY}/contents`;
+
+            const response = await fetch(url);
+
+            if (!response.ok) {
+                throw new Error("Không thể kết nối GitHub");
+            }
+
+            const files = await response.json();
+
+            // Chỉ lấy các thư mục
+            const folders = files.filter(
+                item => item.type === "dir"
+            );
+
+            gamesContainer.innerHTML = "";
+
+            if (folders.length === 0) {
+
+                gamesContainer.innerHTML = `
+                    <div class="loading">
+                        🎮 Chưa có game nào.
+                    </div>
+                `;
+
+                return;
+            }
+
+            folders.forEach(folder => {
+
+                const gameName = formatGameName(folder.name);
+
+                const game = document.createElement("div");
+
+                game.className = "game";
+
+                game.innerHTML = `
+                    <div class="icon">🎮</div>
+
+                    <h2>${gameName}</h2>
+
+                    <p>Trò chơi tương tác dành cho trẻ em</p>
+
+                    <a
+                        class="play"
+                        href="${folder.name}/"
+                    >
+                        ▶ Chơi ngay
+                    </a>
+                `;
+
+                gamesContainer.appendChild(game);
+
+            });
+
+        } catch (error) {
+
+            gamesContainer.innerHTML = `
+                <div class="loading">
+                    ⚠️ Không thể tải danh sách game.
+                    <br><br>
+                    Vui lòng thử lại sau.
+                </div>
+            `;
+
+            console.error(error);
+        }
+    }
+
+
+    // Chuyển tên thư mục thành tên đẹp
+    function formatGameName(name) {
+
+        return name
+            .replace(/[-_]/g, " ")
+            .replace(/\b\w/g, letter => letter.toUpperCase());
+
+    }
+
+
+    loadGames();
+
+</script>
+
+</body>
+</html>
