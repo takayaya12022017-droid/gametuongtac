@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#dff5ff">
+<title>Game tương tác</title>
+
+<style>
+:root{
+  --blue:#1597e5;
+  --blue-dark:#1678bb;
+  --cream:#fff9e9;
+  --viewer-h:100dvh
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:"Segoe UI","Arial",sans-serif;
+  color:#24415c;
+  background:linear-gradient(#dff5ff 0,#fffdf5 36%,#fff8e6 100%);
+  min-height:100vh
+}
+body.playing-game{
+  overflow:hidden;
+  touch-action:none
+}
+.hero{
+  width:100%;
+  max-width:1240px;
+  margin:0 auto;
+  padding:0 22px;
+  line-height:0;
+  text-align:center
+}
+.hero img{
+  width:100%;
+  max-width:100%;
+  height:auto;
+  object-fit:contain;
+  display:block;
+  margin:0 auto;
+  border-radius:0 0 24px 24px
+}
+.section{
+  max-width:1240px;
+  margin:0 auto;
+  padding:14px 22px 24px
+}
+.section-heading{
+  text-align:center;
+  color:var(--blue-dark);
+  font-size:clamp(22px,3vw,30px);
+  font-weight:900;
+  margin:10px 0 22px;
+  text-shadow:0 2px #fff
+}
+.games{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:18px
+}
+.game-card{
+  min-width:0;
+  border:2px solid #b8e5f8;
+  border-radius:20px;
+  padding:12px 12px 14px;
+  text-align:center;
+  background:linear-gradient(150deg,#effaff,#e7f7ff);
+  box-shadow:0 3px 7px #24415c14;
+  transition:transform .18s,box-shadow .18s;
+  overflow:hidden
+}
+.game-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 9px 18px #24415c20
+}
+.game-card:nth-child(4n+2){
+  background:linear-gradient(150deg,#fff5fa,#ffeaf3);
+  border-color:#f4c4da
+}
+.game-card:nth-child(4n+3){
+  background:linear-gradient(150deg,#f4fff1,#e9f9e5);
+  border-color:#b9e4ad
+}
+.game-card:nth-child(4n+4){
+  background:linear-gradient(150deg,#fffbed,#fff4d8);
+  border-color:#f3d991
+}
+.thumb{
+  width:100%;
+  height:150px;
+  display:block;
+  object-fit:cover;
+  border-radius:14px;
+  margin-bottom:10px;
+  background:#fff;
+  cursor:pointer
+}
+.game-title{
+  font-size:17px;
+  line-height:1.28;
+  font-weight:900;
+  color:#164f83;
+  margin:8px 0
+}
+.description{
+  font-size:13px;
+  line-height:1.4;
+  color:#5d6570;
+  min-height:37px;
+  margin:7px 2px 12px
+}
+.play{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  min-width:145px;
+  max-width:100%;
+  padding:9px 18px;
+  border-radius:25px;
+  border:none;
+  cursor:pointer;
+  color:#fff;
+  text-decoration:none;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:800;
+  background:linear-gradient(90deg,#1597e5,#087dce);
+  box-shadow:0 3px 7px #1597e533;
+  transition:filter .15s,transform .15s
+}
+.game-card:nth-child(4n+2) .play{
+  background:linear-gradient(90deg,#f23b7a,#e71f63)
+}
+.game-card:nth-child(4n+3) .play{
+  background:linear-gradient(90deg,#20b75a,#079b45)
+}
+.game-card:nth-child(4n+4) .play{
+  background:linear-gradient(90deg,#ffad18,#f28a00)
+}
+.play:hover{
+  filter:brightness(1.06);
+  transform:scale(1.02)
+}
+.status{
+  grid-column:1/-1;
+  text-align:center;
+  padding:45px 15px;
+  color:#737b83;
+  font-size:18px;
+  line-height:1.6
+}
+footer{
+  text-align:center;
+  color:#168bd0;
+  font-weight:900;
+  font-size:18px;
+  padding:8px 12px 30px
+}
+
+/* ============================================================
+   KHUNG CHƠI GAME FULL MÀN HÌNH DỌC & NGANG (ĐIỆN THOẠI / TABLET / PC)
+   ============================================================ */
+.game-viewer{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  height:var(--viewer-h,100dvh);
+  z-index:9999;
+  display:none;
+  flex-direction:column;
+  background:#dff5ff;
+  animation:fadeIn .2s ease;
+  overflow:hidden
+}
+.game-viewer.active{
+  display:flex
+}
+@keyframes fadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+.game-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  padding:calc(8px + env(safe-area-inset-top,0px)) calc(18px + env(safe-area-inset-right,0px)) 8px calc(18px + env(safe-area-inset-left,0px));
+  background:linear-gradient(90deg,#1678bb,#1597e5);
+  color:#fff;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  flex-shrink:0;
+  z-index:2
+}
+.current-game-title{
+  font-size:17px;
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+.game-frame-wrap{
+  position:relative;
+  flex:1 1 auto;
+  width:100%;
+  min-height:0;
+  background:#fff;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center
+}
+.game-frame{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block;
+  background:#fff
+}
+.game-bottombar{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:8px calc(14px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px));
+  background:#fff9e9;
+  border-top:2px solid #b8e5f8;
+  flex-shrink:0;
+  z-index:2
+}
+.btn-home-bottom{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:9px 22px;
+  border-radius:999px;
+  border:2px solid #fff;
+  background:linear-gradient(90deg,#ff9f1c,#f28a00);
+  color:#fff;
+  font-family:inherit;
+  font-size:15px;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 4px 10px rgba(242,138,0,.35);
+  transition:transform .15s,filter .15s
+}
+.btn-home-bottom:hover{
+  filter:brightness(1.06);
+  transform:translateY(-1px)
+}
+.btn-replay-bottom{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:9px 18px;
+  border-radius:999px;
+  border:2px solid #1597e5;
+  background:#fff;
+  color:#1678bb;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  transition:background .15s
+}
+.btn-replay-bottom:hover{
+  background:#effaff
+}
+
+@media(max-width:1000px){
+  .games{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:750px){
+  .hero{padding:0}
+  .hero img{border-radius:0}
+  .games{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:13px
+  }
+  .section{padding:8px 14px 20px}
+  .thumb{height:clamp(105px,22vw,145px)}
+  .current-game-title{font-size:14px}
+}
+@media(max-width:520px){
+  .game-topbar{
+    padding:calc(6px + env(safe-area-inset-top,0px)) 12px 6px 12px
+  }
+  .current-game-title{font-size:14px}
+  .game-bottombar{
+    padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px)) 10px;
+    gap:8px
+  }
+  .btn-home-bottom{padding:7px 15px;font-size:13px}
+  .btn-replay-bottom{padding:7px 13px;font-size:13px}
+}
+/* Tối ưu khi xoay ngang điện thoại / tablet nhỏ để phần chơi game rộng tối đa */
+@media(orientation:landscape) and (max-height:540px){
+  .game-topbar{
+    padding:4px calc(14px + env(safe-area-inset-right,0px)) 4px calc(14px + env(safe-area-inset-left,0px))
+  }
+  .current-game-title{font-size:13px}
+  .game-bottombar{
+    padding:4px calc(12px + env(safe-area-inset-right,0px)) calc(4px + env(safe-area-inset-bottom,0px)) calc(12px + env(safe-area-inset-left,0px));
+    gap:10px
+  }
+  .btn-home-bottom{padding:5px 14px;font-size:12px}
+  .btn-replay-bottom{padding:5px 12px;font-size:12px}
+}
+@media(max-width:420px){
+  .game-card{padding:8px;border-radius:15px}
+  .thumb{height:100px}
+  .game-title{font-size:14px}
+  .description{font-size:11px;min-height:43px}
+  .play{min-width:0;padding:9px 13px;font-size:12px}
+}
+</style>
+</head>
+
+<body>
+
+<header class="hero">
+  <img
+    id="hero-banner"
+    src="https://takayaya12022017-droid.github.io/gametuongtac/banner.jpg"
+    alt="Game tương tác - kho trò chơi học tập dành cho trẻ em"
+  >
+</header>
+
+<main class="section">
+  <h2 class="section-heading">📌 Khám phá các trò chơi 📌</h2>
+  <div id="games" class="games">
+    <div class="status">⏳ Đang tải các trò chơi...</div>
+  </div>
+</main>
+
+<footer>⭐ Chúc các bé học tập vui vẻ! ⭐</footer>
+
+<!-- Khung chơi game tích hợp có sẵn nút Quay về trang chủ -->
+<div id="game-viewer" class="game-viewer" aria-hidden="true">
+  <div class="game-topbar">
+    <span id="current-game-title" class="current-game-title"></span>
+  </div>
+
+  <div class="game-frame-wrap">
+    <iframe
+      id="game-frame"
+      class="game-frame"
+      title="Khung trò chơi tương tác"
+      allow="autoplay; fullscreen"
+    ></iframe>
+  </div>
+
+  <div class="game-bottombar">
+    <button type="button" id="btn-home-bottom" class="btn-home-bottom">
+      🏠 Quay về trang chủ
+    </button>
+    <button type="button" id="btn-replay-bottom" class="btn-replay-bottom">
+      🔄 Chơi lại trò này
+    </button>
+  </div>
+</div>
+
+<script>
+/*
+  ============================================================
+  TỰ ĐỘNG NHẬN DIỆN GAME + COVER + CHỐNG GIỚI HẠN GITHUB API
+  + TỰ ĐỘNG FIT FULL MÀN HÌNH DỌC/NGANG TRÊN ĐIỆN THOẠI & TABLET
+  ============================================================
+*/
+
+const DEFAULT_GITHUB = {
+  owner: "takayaya12022017-droid",
+  repo: "gametuongtac",
+  basePath: "https://takayaya12022017-droid.github.io/gametuongtac/"
+};
+
+/*
+  Danh sách thư mục game mặc định để hiển thị tức thì ngay cả khi
+  GitHub API bị giới hạn lượt truy cập (Rate Limit 60 lần/giờ).
+  Khi GitHub API hoạt động bình thường, trang vẫn tự động quét thêm
+  mọi thư mục game mới được tải lên kho GitHub.
+*/
+const DEFAULT_GAME_FOLDERS = [
+  "Bé vui học toán tìm hình tam giác",
+  "Bé vui học đếm 1-3",
+  "Bé vui nhận biết một và nhiều",
+  "Chạm biến mất"
+];
+
+const CACHE_KEY = "gametuongtac_cached_games_v2";
+
+function getGitHubInfo(){
+  const host = window.location.hostname;
+  const parts = window.location.pathname.split("/").filter(Boolean);
+
+  if(host.endsWith(".github.io")){
+    const owner = host.split(".")[0];
+    const repo = parts.length ? parts[0] : (host.split(".")[0] + ".github.io");
+    const basePath = parts.length ? "/" + parts[0] + "/" : "/";
+    return {owner, repo, basePath};
+  }
+
+  return DEFAULT_GITHUB;
+}
+
+function setupBanner(){
+  const banner = document.getElementById("hero-banner");
+  if(!banner) return;
+  const info = getGitHubInfo();
+  if(window.location.hostname.endsWith(".github.io")){
+    banner.src = info.basePath + "banner.jpg";
+    banner.onerror = function(){
+      banner.onerror = null;
+      banner.src = "https://takayaya12022017-droid.github.io/gametuongtac/banner.jpg";
+    };
+  }
+}
+
+function escapeHTML(value){
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function encodePath(path){
+  return path
+    .split("/")
+    .map(part => encodeURIComponent(part))
+    .join("/");
+}
+
+function rawGitHubURL(owner, repo, branch, path){
+  const safeBranch = encodeURIComponent(branch).replace(/%2F/g,"/");
+  return "https://raw.githubusercontent.com/"
+    + encodeURIComponent(owner) + "/"
+    + encodeURIComponent(repo) + "/"
+    + safeBranch + "/"
+    + encodePath(path);
+}
+
+function pagesFileURL(basePath, folderName, fileName){
+  const prefix = basePath.endsWith("/") ? basePath : (basePath + "/");
+  return prefix
+    + encodeURIComponent(folderName)
+    + "/"
+    + encodeURIComponent(fileName);
+}
+
+function buildGameEntry(folderName, indexFileName, coverFileName, owner, repo, branch, basePath){
+  const candidates = [];
+
+  if(coverFileName){
+    candidates.push(pagesFileURL(basePath, folderName, coverFileName));
+    candidates.push(rawGitHubURL(owner, repo, branch, folderName + "/" + coverFileName));
+  }
+
+  const possibleNames = [
+    "cover.jpg",
+    "cover.png",
+    "cover.jpeg",
+    "cover.webp",
+    "cover.JPG",
+    "cover.PNG",
+    "cover.JPEG",
+    "cover.WEBP"
+  ];
+
+  possibleNames.forEach(name => {
+    candidates.push(pagesFileURL(basePath, folderName, name));
+    candidates.push(rawGitHubURL(owner, repo, branch, folderName + "/" + name));
+  });
+
+  return {
+    folderName: folderName,
+    title: folderName,
+    description: "Trò chơi tương tác dành cho bé",
+    url: pagesFileURL(basePath, folderName, indexFileName || "index.html"),
+    coverCandidates: [...new Set(candidates)]
+  };
+}
+
+function setImageWithFallback(img, candidates, fallback){
+  let index = 0;
+
+  function tryNext(){
+    if(index >= candidates.length){
+      img.onerror = null;
+      img.src = fallback;
+      return;
+    }
+
+    const url = candidates[index++];
+    img.onerror = tryNext;
+    img.src = url;
+  }
+
+  tryNext();
+}
+
+function fallbackCover(title){
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450">
+      <defs>
+        <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#dff5ff"/>
+          <stop offset="1" stop-color="#fff0c9"/>
+        </linearGradient>
+      </defs>
+      <rect width="800" height="450" rx="30" fill="url(#g)"/>
+      <text x="400" y="205" text-anchor="middle" font-size="92">🎮</text>
+      <text x="400" y="300" text-anchor="middle"
+            font-family="Arial,sans-serif" font-size="34"
+            font-weight="700" fill="#1678bb">
+        ${escapeHTML(title)}
+      </text>
+    </svg>
+  `;
+
+  return "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(svg);
+}
+
+async function getJSON(url){
+  const response = await fetch(url, {
+    headers: {
+      "Accept":"application/vnd.github+json"
+    }
+  });
+
+  if(!response.ok){
+    throw new Error("GitHub API " + response.status + ": " + url);
+  }
+
+  return response.json();
+}
+
+function loadCachedFolderSpecs(){
+  try{
+    const raw = localStorage.getItem(CACHE_KEY);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed) && parsed.length){
+      return parsed;
+    }
+  }catch(e){}
+  return null;
+}
+
+function saveCachedFolderSpecs(specs){
+  try{
+    localStorage.setItem(CACHE_KEY, JSON.stringify(specs));
+  }catch(e){}
+}
+
+/*
+  ============================================================
+  ĐỒNG BỘ CHIỀU CAO KHUNG NHÌN & AUTO-FIT TRÒ CHƠI DỌC / NGANG
+  ============================================================
+*/
+let activeGameUrl = "";
+let frameObserver = null;
+let fitTimer = null;
+
+function syncViewerViewport(){
+  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  document.documentElement.style.setProperty("--viewer-h", vh + "px");
+  scheduleFitGameIframe();
+}
+
+function scheduleFitGameIframe(){
+  if(fitTimer) clearTimeout(fitTimer);
+  fitTimer = setTimeout(function(){
+    const frame = document.getElementById("game-frame");
+    if(frame && activeGameUrl){
+      fitGameInsideIframe(frame);
+    }
+  }, 60);
+}
+
+function fitGameInsideIframe(iframe){
+  try{
+    const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+    if(!doc || !doc.body || !doc.documentElement) return;
+
+    let meta = doc.querySelector('meta[name="viewport"]');
+    if(!meta && doc.head){
+      meta = doc.createElement("meta");
+      meta.name = "viewport";
+      meta.content = "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no";
+      doc.head.appendChild(meta);
+    }
+
+    if(!doc.getElementById("auto-fit-game-style")){
+      const style = doc.createElement("style");
+      style.id = "auto-fit-game-style";
+      style.textContent = `
+        html, body {
+          margin: 0 !important;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden !important;
+          -webkit-text-size-adjust: 100%;
+        }
+        body {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+        img, canvas, svg, video {
+          max-width: 100%;
+          height: auto;
+        }
+      `;
+      (doc.head || doc.body).appendChild(style);
+    }
+
+    doc.body.style.zoom = "1";
+
+    const availW = iframe.clientWidth || window.innerWidth;
+    const availH = iframe.clientHeight || window.innerHeight;
+    if(!availW || !availH) return;
+
+    const contentW = Math.max(doc.body.scrollWidth, doc.documentElement.scrollWidth, 1);
+    const contentH = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight, 1);
+
+    if(contentW > availW + 2 || contentH > availH + 2){
+      const scaleW = availW / contentW;
+      const scaleH = availH / contentH;
+      const scale = Math.max(0.42, Math.min(1, scaleW, scaleH) * 0.98);
+      doc.body.style.zoom = String(scale);
+    }
+  }catch(e){}
+}
+
+function injectHomeButtonIntoIframe(iframe){
+  try{
+    const doc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+    if(!doc || !doc.body) return;
+
+    if(!doc.getElementById("injected-home-btn-style")){
+      const style = doc.createElement("style");
+      style.id = "injected-home-btn-style";
+      style.textContent = `
+        .injected-endgame-home-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          margin: 8px 6px;
+          padding: 10px 20px;
+          border-radius: 999px;
+          border: 2px solid #fff;
+          background: linear-gradient(90deg, #ff9f1c, #f28a00);
+          color: #fff !important;
+          font-family: "Segoe UI", Arial, sans-serif;
+          font-size: 16px;
+          font-weight: 800;
+          text-decoration: none !important;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.22);
+          transition: transform 0.15s ease, filter 0.15s ease;
+          z-index: 99999;
+        }
+        .injected-endgame-home-btn:hover {
+          transform: scale(1.04);
+          filter: brightness(1.06);
+        }
+      `;
+      (doc.head || doc.body).appendChild(style);
+    }
+
+    const replayKeywords = /(chơi lại|làm lại|thử lại|ván mới|tiếp tục|bắt đầu lại|replay|restart|play again|try again)/i;
+
+    function scanAndAttachEndGameButtons(){
+      const buttons = doc.querySelectorAll("button, a, [role='button']");
+      buttons.forEach(btn => {
+        if(btn.classList.contains("injected-endgame-home-btn")) return;
+        if(btn.dataset.hasHomeSibling === "1") return;
+
+        const text = (btn.textContent || btn.value || "").trim();
+        if(replayKeywords.test(text)){
+          btn.dataset.hasHomeSibling = "1";
+          const homeBtn = doc.createElement("button");
+          homeBtn.type = "button";
+          homeBtn.className = "injected-endgame-home-btn";
+          homeBtn.innerHTML = "🏠 Quay về trang chủ";
+          homeBtn.addEventListener("click", function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            closeGameViewer(false);
+          });
+          if(btn.parentNode){
+            btn.parentNode.insertBefore(homeBtn, btn.nextSibling);
+          }
+        }
+      });
+    }
+
+    scanAndAttachEndGameButtons();
+    fitGameInsideIframe(iframe);
+
+    if(frameObserver){
+      frameObserver.disconnect();
+    }
+    frameObserver = new MutationObserver(function(){
+      scanAndAttachEndGameButtons();
+      scheduleFitGameIframe();
+    });
+    frameObserver.observe(doc.body, {childList: true, subtree: true});
+  }catch(e){}
+}
+
+function tryEnterMobileFullscreen(element){
+  try{
+    const isTouchOrMobile = ("ontouchstart" in window) || navigator.maxTouchPoints > 0 || window.innerWidth <= 1024;
+    if(!isTouchOrMobile) return;
+    if(document.fullscreenElement || document.webkitFullscreenElement) return;
+    if(element.requestFullscreen){
+      element.requestFullscreen().catch(function(){});
+    }else if(element.webkitRequestFullscreen){
+      element.webkitRequestFullscreen();
+    }
+  }catch(e){}
+}
+
+function tryExitFullscreen(){
+  try{
+    if(document.fullscreenElement && document.exitFullscreen){
+      document.exitFullscreen().catch(function(){});
+    }else if(document.webkitFullscreenElement && document.webkitExitFullscreen){
+      document.webkitExitFullscreen();
+    }
+  }catch(e){}
+}
+
+function openGameViewer(title, url){
+  const viewer = document.getElementById("game-viewer");
+  const frame = document.getElementById("game-frame");
+  const titleEl = document.getElementById("current-game-title");
+
+  activeGameUrl = url;
+  titleEl.textContent = "🎮 " + title;
+  frame.src = url;
+
+  viewer.classList.add("active");
+  viewer.setAttribute("aria-hidden", "false");
+  document.body.classList.add("playing-game");
+
+  syncViewerViewport();
+  tryEnterMobileFullscreen(viewer);
+
+  try{
+    history.pushState({gameOpen: true, title: title}, "", "#choi-game");
+  }catch(e){}
+}
+
+function closeGameViewer(fromPopState){
+  const viewer = document.getElementById("game-viewer");
+  const frame = document.getElementById("game-frame");
+
+  if(!viewer.classList.contains("active")) return;
+
+  if(frameObserver){
+    frameObserver.disconnect();
+    frameObserver = null;
+  }
+
+  tryExitFullscreen();
+
+  viewer.classList.remove("active");
+  viewer.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("playing-game");
+  frame.src = "about:blank";
+  activeGameUrl = "";
+
+  if(!fromPopState && window.location.hash === "#choi-game"){
+    try{
+      history.back();
+    }catch(e){}
+  }
+}
+
+function replayCurrentGame(){
+  const frame = document.getElementById("game-frame");
+  if(!activeGameUrl) return;
+  frame.src = "about:blank";
+  setTimeout(function(){
+    frame.src = activeGameUrl;
+  }, 50);
+}
+
+function setupViewerControls(){
+  document.getElementById("btn-home-bottom").addEventListener("click", function(){
+    closeGameViewer(false);
+  });
+  document.getElementById("btn-replay-bottom").addEventListener("click", replayCurrentGame);
+
+  const frame = document.getElementById("game-frame");
+  frame.addEventListener("load", function(){
+    if(activeGameUrl){
+      injectHomeButtonIntoIframe(frame);
+      setTimeout(function(){ fitGameInsideIframe(frame); }, 180);
+      setTimeout(function(){ fitGameInsideIframe(frame); }, 500);
+    }
+  });
+
+  window.addEventListener("resize", syncViewerViewport);
+  window.addEventListener("orientationchange", function(){
+    setTimeout(syncViewerViewport, 100);
+    setTimeout(syncViewerViewport, 350);
+  });
+  if(window.visualViewport){
+    window.visualViewport.addEventListener("resize", syncViewerViewport);
+  }
+
+  window.addEventListener("popstate", function(){
+    const viewer = document.getElementById("game-viewer");
+    if(viewer && viewer.classList.contains("active")){
+      closeGameViewer(true);
+    }
+  });
+
+  window.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){
+      closeGameViewer(false);
+    }
+  });
+}
+
+function renderGameCards(validGames){
+  const container = document.getElementById("games");
+  if(!validGames || !validGames.length){
+    container.innerHTML =
+      '<div class="status">⚠️ Chưa tìm thấy game có file index.html.</div>';
+    return;
+  }
+
+  container.innerHTML = validGames.map((game, i) => `
+    <article class="game-card">
+      <img
+        class="thumb"
+        id="cover-${i}"
+        data-game-index="${i}"
+        src="${fallbackCover(game.title)}"
+        alt="${escapeHTML(game.title)}"
+        loading="lazy"
+      >
+
+      <div class="game-title">${escapeHTML(game.title)}</div>
+
+      <div class="description">
+        ${escapeHTML(game.description)}
+      </div>
+
+      <button type="button" class="play" data-game-index="${i}">
+        🎮 Chơi ngay
+      </button>
+    </article>
+  `).join("");
+
+  validGames.forEach((game, i) => {
+    const img = document.getElementById("cover-" + i);
+    if(!img) return;
+    const fallback = fallbackCover(game.title);
+    setImageWithFallback(img, game.coverCandidates, fallback);
+  });
+
+  container.querySelectorAll("[data-game-index]").forEach(el => {
+    el.addEventListener("click", function(){
+      const idx = Number(el.getAttribute("data-game-index"));
+      const game = validGames[idx];
+      if(game){
+        openGameViewer(game.title, game.url);
+      }
+    });
+  });
+}
+
+async function fetchFolderSpecsFromGitHub(owner, repo){
+  const ignored = ["assets","css","js","images","image","img"];
+
+  // Ưu tiên Git Trees API: chỉ tốn 1 request duy nhất để đọc toàn bộ thư mục & file
+  try{
+    const treeData = await getJSON(
+      "https://api.github.com/repos/"
+      + encodeURIComponent(owner) + "/"
+      + encodeURIComponent(repo)
+      + "/git/trees/HEAD?recursive=1"
+    );
+
+    if(treeData && Array.isArray(treeData.tree)){
+      const map = new Map();
+      treeData.tree.forEach(item => {
+        if(item.type !== "blob" || !item.path) return;
+        const parts = item.path.split("/");
+        if(parts.length !== 2) return;
+        const folderName = parts[0];
+        const fileName = parts[1];
+        if(folderName.startsWith(".") || ignored.includes(folderName.toLowerCase())) return;
+
+        if(!map.has(folderName)){
+          map.set(folderName, {folderName, indexFile: null, coverFile: null});
+        }
+        const entry = map.get(folderName);
+        if(fileName.toLowerCase() === "index.html"){
+          entry.indexFile = fileName;
+        }else if(/^cover\.(jpe?g|png|webp)$/i.test(fileName)){
+          entry.coverFile = fileName;
+        }
+      });
+
+      const specs = [...map.values()].filter(item => Boolean(item.indexFile));
+      if(specs.length){
+        return specs;
+      }
+    }
+  }catch(e){
+    console.warn("Git Trees API không khả dụng, chuyển sang đọc thư mục:", e);
+  }
+
+  // Fallback đọc danh sách thư mục gốc
+  const root = await getJSON(
+    "https://api.github.com/repos/"
+    + encodeURIComponent(owner) + "/"
+    + encodeURIComponent(repo)
+    + "/contents/"
+  );
+
+  const folders = root
+    .filter(item => item.type === "dir")
+    .filter(item => !item.name.startsWith("."))
+    .filter(item => !ignored.includes(item.name.toLowerCase()));
+
+  return folders.map(folder => ({
+    folderName: folder.name,
+    indexFile: "index.html",
+    coverFile: null
+  }));
+}
+
+async function loadGames(){
+  const info = getGitHubInfo();
+  const {owner, repo, basePath} = info;
+  const branch = "main";
+
+  // 1. Hiển thị ngay lập tức từ bộ nhớ đệm hoặc danh sách mặc định (không bao giờ bị mất game)
+  const cachedSpecs = loadCachedFolderSpecs();
+  const initialSpecs = cachedSpecs || DEFAULT_GAME_FOLDERS.map(name => ({
+    folderName: name,
+    indexFile: "index.html",
+    coverFile: "cover.jpg"
+  }));
+
+  const initialGames = initialSpecs.map(spec =>
+    buildGameEntry(spec.folderName, spec.indexFile, spec.coverFile, owner, repo, branch, basePath)
+  );
+  renderGameCards(initialGames);
+
+  // 2. Tự động đồng bộ ngầm với GitHub để cập nhật nếu có game mới
+  try{
+    const liveSpecs = await fetchFolderSpecsFromGitHub(owner, repo);
+    if(liveSpecs && liveSpecs.length){
+      saveCachedFolderSpecs(liveSpecs);
+      const liveGames = liveSpecs.map(spec =>
+        buildGameEntry(spec.folderName, spec.indexFile, spec.coverFile, owner, repo, branch, basePath)
+      );
+      renderGameCards(liveGames);
+    }
+  }catch(error){
+    console.warn("Đang dùng danh sách trò chơi đã lưu do GitHub API giới hạn lượt gọi:", error);
+  }
+}
+
+setupBanner();
+setupViewerControls();
+syncViewerViewport();
+loadGames();
+</script>
+
+</body>
+</html>
